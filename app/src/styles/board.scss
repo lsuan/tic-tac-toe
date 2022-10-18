@@ -1,0 +1,30 @@
+#board {
+  .w-fit:first-child, .w-fit:nth-child(4) {
+    border-right: 4px solid white;
+    border-bottom: 4px solid white;
+  }
+  .w-fit:nth-child(2), .w-fit:nth-child(5) {
+    border-right: 4px solid white;
+    border-bottom: 4px solid white;
+  }
+  .w-fit:nth-child(3), .w-fit:nth-child(6) {
+    border-bottom: 4px solid white;
+  }
+  .w-fit:nth-child(7), .w-fit:nth-child(8) {
+    border-right: 4px solid white;
+  }
+  .w-fit {
+    &:first-child > #cell {
+      border-top-left-radius: 0.5rem;
+    }
+    &:nth-child(3) > #cell {
+      border-top-right-radius: 0.5rem;
+    }
+    &:nth-child(7) > #cell {
+      border-bottom-left-radius: 0.5rem;
+    }
+    &:last-child > #cell {
+      border-bottom-right-radius: 0.5rem;
+    }
+  }
+}
