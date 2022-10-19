@@ -1,20 +1,26 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 type InitialState = {
+  gameMode: string | undefined,
+  board: number[],
   emptyCells: number,
   winner: number | undefined,
-  board: number[],
 }
 
 const initialState: InitialState = {
+  gameMode: undefined,
+  board: [...Array(9)], // element in array will be 0 or 1
   emptyCells: 9,
   winner: undefined,
-  board: [...Array(9)], // element in array will be 0 or 1
 }
 export const boardSlice = createSlice({
   name: "board",
   initialState,
   reducers: {
+    setGameMode: (state, action: PayloadAction<string>) => {
+      state.gameMode = action.payload;
+    },
+
     setBoard: (state, action: PayloadAction<number[]>) => {
       const boardIndex = action.payload[0];
       const value = action.payload[1];
@@ -23,12 +29,7 @@ export const boardSlice = createSlice({
     },
 
     // after a player picks a cell, check if the player won or tie
-    checkGameOver: (state, action: PayloadAction<number>) => {
-      if (state.emptyCells === 0) {
-        state.winner = 2;
-        return;
-      }
-      
+    checkGameOver: (state, action: PayloadAction<number>) => {      
       // 0 1 2
       // 3 4 5
       // 6 7 8
@@ -49,10 +50,15 @@ export const boardSlice = createSlice({
           return;
         }
       }
-      state.winner = undefined;
+
+      if (state.emptyCells === 0) {
+        state.winner = 2;
+      } else {
+        state.winner = undefined;
+      }
     }
   }
 });
 
 export default boardSlice.reducer;
-export const { setBoard, checkGameOver } = boardSlice.actions;
+export const { setGameMode, setBoard, checkGameOver } = boardSlice.actions;

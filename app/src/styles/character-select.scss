@@ -1,0 +1,39 @@
+#character-select {
+  max-width: 1024px;
+  .characters {
+    counter-reset: grid;
+    .character {
+      grid-column: span 2;
+      .avatar {
+        width: 8rem;
+        object-fit: contain;
+      }
+      .name {
+        width: 8rem;
+        height: 2.5rem;
+        object-fit: contain;
+      }
+
+      // TODO: add hover animations + styling
+      &:hover {
+
+      }
+      &::after {
+        counter-increment: grid;
+        content: counter(grid);
+      }
+      /* Dealing with single orphan */
+      &:last-child:nth-child(3n - 2) {
+        grid-column-end: 5;
+      }
+    }
+  }
+  .bottom-section {
+    .text {
+      font-size: 1.5rem;
+      .character-name {
+        color: var(--yellow);
+      }
+    }
+  }
+}
