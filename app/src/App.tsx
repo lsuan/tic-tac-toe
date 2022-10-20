@@ -109,7 +109,7 @@ function App() {
   }, [turn]);
    
   return (
-    <div className="App md:container flex justify-center items-center mx-auto p-8 min-h-screen">
+    <div className="App lg:container flex justify-center items-center mx-auto p-3 lg:p-8 min-h-screen">
       <CharacterSelect />
       {/* <h1 className="app-title ">
         TIC TAC TOE

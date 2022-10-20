@@ -17,6 +17,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--gray); 
   color: white;
+  box-sizing: border-box;
 }
 
 :root {
@@ -37,4 +38,11 @@ h1 {
 .btn {
   font-size: 2rem;
   background-color: var(--red);
+  border: 2px solid var(--red);
+}
+
+.btn:hover {
+  border: 2px solid var(--red);
+  color: var(--red);
+  background-color: var(--yellow);
 }
