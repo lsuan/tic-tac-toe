@@ -28,6 +28,7 @@
       }
 
       &:hover, &:focus {
+        cursor: pointer;
         background-color: var(--yellow);
       }
 
@@ -40,11 +41,11 @@
     }
   }
   .bottom-section {
-    .text {
-      font-size: 1.5rem;
-      .character-name {
-        color: var(--yellow);
-      }
+    .warning {
+      text-shadow: 5px 5px 0px var(--red), 9px 8px 0px rgba(0,0,0,0.15);
+    }
+    .character-name {
+      color: var(--yellow);
     }
   }
 }

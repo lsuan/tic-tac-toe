@@ -1,14 +1,22 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import Character from "src/character";
 
 type InitialState = {
   gameMode: string | undefined,
+  players: Player[] | undefined,
   board: number[],
   emptyCells: number,
   winner: number | undefined,
 }
 
+type Player = {
+  name: string,
+  character: Character,
+}
+
 const initialState: InitialState = {
   gameMode: undefined,
+  players: undefined,
   board: [...Array(9)], // element in array will be 0 or 1
   emptyCells: 9,
   winner: undefined,
@@ -19,6 +27,10 @@ export const boardSlice = createSlice({
   reducers: {
     setGameMode: (state, action: PayloadAction<string>) => {
       state.gameMode = action.payload;
+    },
+
+    setPlayers: (state, action: PayloadAction<Player[]>) => {
+      state.players = action.payload;
     },
 
     setBoard: (state, action: PayloadAction<number[]>) => {
@@ -56,9 +68,25 @@ export const boardSlice = createSlice({
       } else {
         state.winner = undefined;
       }
+    },
+
+    clearForRematch: (state) => {
+      const newBoard = [...Array(9)];
+      state.board = newBoard;
+      state.emptyCells = 9;
+      state.winner = undefined;
+    },
+
+    clearAll: (state) => {
+      state.gameMode = "";
+      state.players = undefined;
+      const newBoard = [...Array(9)];
+      state.board = newBoard;
+      state.emptyCells = 9;
+      state.winner = undefined;
     }
   }
 });
 
 export default boardSlice.reducer;
-export const { setGameMode, setBoard, checkGameOver } = boardSlice.actions;
+export const { setGameMode, setPlayers, setBoard, checkGameOver, clearForRematch, clearAll } = boardSlice.actions;

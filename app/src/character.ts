@@ -1,38 +1,45 @@
+type Character = {
+  imageUrl: string,
+  nameUrl: string,
+}
+
 export const characters = {
-  "Donggeon": {
+  "donggeon": {
     imageUrl: require("./assets/characters/donggeon-pic.png"),
     nameUrl: require("./assets/characters/donggeon-name.png"),
   }, 
-  "Chan": {
+  "chan": {
     imageUrl: require("./assets/characters/chan-pic.png"),
     nameUrl: require("./assets/characters/chan-name.png"),
   }, 
-  "Jisu": {
+  "jisu": {
     imageUrl: require("./assets/characters/jisu-pic.png"),
     nameUrl: require("./assets/characters/jisu-name.png"),
   }, 
-  "Jaeyun": {
+  "jaeyun": {
     imageUrl: require("./assets/characters/jaeyun-pic.png"),
     nameUrl: require("./assets/characters/jaeyun-name.png"),
   }, 
-  "J.You": {
+  "j.you": {
     imageUrl: require("./assets/characters/jyou-pic.png"),
     nameUrl: require("./assets/characters/jyou-name.png"),
   }, 
-  "Kyungho": {
+  "kyungho": {
     imageUrl: require("./assets/characters/kyungho-pic.png"),
     nameUrl: require("./assets/characters/kyungho-name.png"),
   }, 
-  "Daigo": {
+  "daigo": {
     imageUrl: require("./assets/characters/daigo-pic.png"),
     nameUrl: require("./assets/characters/daigo-name.png"),
   },
-  "Renta": {
+  "renta": {
     imageUrl: require("./assets/characters/renta-pic.png"),
     nameUrl: require("./assets/characters/renta-name.png"),
   },  
-  "Yeojeong": {
+  "yeojeong": {
     imageUrl: require("./assets/characters/yeojeong-pic.png"),
     nameUrl: require("./assets/characters/yeojeong-name.png"),
   }, 
 }
+
+export default Character;

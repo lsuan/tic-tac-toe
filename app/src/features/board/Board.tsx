@@ -1,4 +1,4 @@
-import Cell from "../Cell";
+import Cell from "../../components/Cell";
 import "src/styles/board.scss";
 
 function Board() {

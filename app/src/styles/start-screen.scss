@@ -1,0 +1,16 @@
+#start-screen {
+  .app-title {
+    text-shadow: 5px 5px 0px var(--blue), 9px 8px 0px rgba(0,0,0,0.15);
+  }
+  .game-modes {
+    button {
+      text-shadow: 5px 5px 0px var(--red), 9px 8px 0px rgba(0,0,0,0.15);
+      &:hover {
+        color: var(--yellow);
+        scale: 1.15;
+        transition: all 0.2s ease;
+        transform: translateY(0.5rem);
+      }
+    }
+  }
+}
