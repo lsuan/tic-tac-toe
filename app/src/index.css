@@ -46,3 +46,7 @@ h1 {
   color: var(--yellow);
   border-color: var(--yellow);
 }
+
+.btn:not(.menu-btn):hover {
+  transition: all 0.3s ease;
+}

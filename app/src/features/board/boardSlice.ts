@@ -7,11 +7,18 @@ type InitialState = {
   board: number[],
   emptyCells: number,
   winner: number | undefined,
+  winStats: Stats[],
+  tieStats: Stats,
+  totalGames: number,
 }
 
 type Player = {
   name: string,
   character: Character,
+}
+
+type Stats = {
+  occurrences: number,
 }
 
 const initialState: InitialState = {
@@ -20,6 +27,12 @@ const initialState: InitialState = {
   board: [...Array(9)], // element in array will be 0 or 1
   emptyCells: 9,
   winner: undefined,
+  winStats: [
+    { occurrences: 0 }, 
+    { occurrences: 0 }
+  ],
+  tieStats: { occurrences: 0 },
+  totalGames: 0,
 }
 export const boardSlice = createSlice({
   name: "board",
@@ -59,12 +72,16 @@ export const boardSlice = createSlice({
       for (const combo of winningCombos) {
         if (state.board[combo[0]] === action.payload && state.board[combo[1]] === action.payload && state.board[combo[2]] === action.payload) {
           state.winner = action.payload;
+          state.winStats[action.payload].occurrences++;
+          state.totalGames++;
           return;
         }
       }
 
       if (state.emptyCells === 0) {
         state.winner = 2;
+        state.tieStats.occurrences++;
+        state.totalGames++;
       } else {
         state.winner = undefined;
       }
@@ -84,6 +101,12 @@ export const boardSlice = createSlice({
       state.board = newBoard;
       state.emptyCells = 9;
       state.winner = undefined;
+      state.winStats = [
+        { occurrences: 0 }, 
+        { occurrences: 0 }
+      ];
+      state.tieStats = { occurrences: 0 };
+      state.totalGames = 0;
     }
   }
 });

@@ -1,3 +1,9 @@
+@keyframes rotateOpposite {
+  50% {
+    rotate: -10deg;
+  }
+}
+
 #character-select {
   max-width: 1024px;
   @media screen and (max-width: 768px) {
@@ -17,19 +23,35 @@
     counter-reset: grid;
     .character {
       grid-column: span 2;
+      &.donggeon > .name, &.yeojeong > .name {
+        scale: 1.2;
+      }
+      &.jisu > .name, &.jyou > .name, &.kyungho > .name {
+        scale: 1.1;
+      }
+      &.jaeyun > .name {
+        scale: 1.3;
+      }
       .avatar {
         width: 8rem;
-        object-fit: contain;
+        object-fit: scale-down;
+        animation: rotateOpposite 1.2s infinite;
       }
       .name {
         width: 8rem;
-        height: 2.5rem;
-        object-fit: contain;
+        height: 2rem;
+        object-fit: scale-down;
+        animation: rotateOpposite 1.2s infinite;
       }
 
-      &:hover, &:focus {
+      &:hover, &.selected {
         cursor: pointer;
         background-color: var(--yellow);
+        transition: all 0.3s ease;
+        
+        .avatar, .name {
+          animation-play-state: paused;
+        }
       }
 
       &:last-child:nth-child(5n - 1) {

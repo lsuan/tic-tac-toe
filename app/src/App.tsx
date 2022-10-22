@@ -17,7 +17,7 @@ function App() {
   useEffect( () => {
     const firstPlayer = Math.floor(Math.random() * 2);
     dispatch(changeTurn(firstPlayer));
-  }, []);
+  }, [dispatch]);
 
   const gameMode = useAppSelector((state) => state.board.gameMode);
   const players = useAppSelector((state) => state.board.players);
@@ -26,7 +26,6 @@ function App() {
   const winner = useAppSelector((state) => state.board.winner);
 
   const aiMakeMove = () => {
-    console.log(board);
     const aiOccupied = board.map((element, index) => element === 1 ? index : -1).filter((value) => value !== -1);
     const userOccupied = board.map((element, index) => element === 0 ? index : -1).filter((value) => value !== -1);
     let move = -1;
@@ -70,15 +69,13 @@ function App() {
           const winningCombo = winningCombos[index];
           for (const cellNum of winningCombo) {
             if (emptyCells.includes(cellNum) && !aiOccupied.includes(cellNum)) {
-              console.log(cellNum);
               const cell = document.querySelector(`.cell-${cellNum} button`) as HTMLElement;
               cell.click();
               userCombosAvailable.delete(index);
-              break;
+              return;
             }
           }
         }
-        return;
       } else {
         // choose a cell to make ai win
         let availableMoves:Set<number> = new Set();
@@ -117,13 +114,18 @@ function App() {
       return;
     }
 
-    if (turn === 1 && gameMode === "pve") {
-      setTimeout( aiMakeMove, 800);
+    if (gameMode === "pve" && turn === 1) {
+      // if board is empty, then make ai start game a little after render
+      if (board.every((cell) => cell === undefined)) {
+        setTimeout( aiMakeMove, 250);
+      } else {
+        setTimeout( aiMakeMove, 750);
+      }
     }
   }, [turn, players]);
    
   return (
-    <div className="App lg:container flex justify-center items-center p-3 lg:p-8 min-h-screen mx-auto">
+    <div className="App lg:container flex justify-center items-center p-3 lg:p-8 h-screen mx-auto">
       {
         !gameMode && <StartScreen />
       }
@@ -131,11 +133,14 @@ function App() {
         gameMode && !players && <CharacterSelect />
       }
       {
-        gameMode && players && !winner && <Game />
+        gameMode && players && winner === undefined && <Game />
       }
       {
-        winner && <Results />
+        winner !== undefined && <Results />
       }
+      <div className="absolute bottom-5 disclaimer text-center text-base px-10 md:px-32">
+        !! I do not own the assets displayed here. Artist face images and name images belong to WakeOne Entertainment. !!
+      </div>
     </div>
   );
 }

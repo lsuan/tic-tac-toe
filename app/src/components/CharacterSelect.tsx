@@ -1,33 +1,48 @@
 import "../styles/character-select.scss";
 import { characters } from "src/character";
-import { useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useAppSelector, useAppDispatch } from "src/states/hooks";
-import { setPlayers } from "src/features/board/boardSlice";
+import { clearAll, setPlayers } from "src/features/board/boardSlice";
 import Character from "src/character";
 
 function CharacterSelect() {
   const textRef = useRef(null);
   const dispatch = useAppDispatch();
-  const [userCharacter, setUserCharacter] = useState("");
   const gameMode = useAppSelector((state) => state.board.gameMode);
 
+  useEffect( () => {
+    setRandomRotate();
+  }, []);
   
-  const getRandomCharacter = () => {
+  const setRandomRotate = () => {
+    const characterImages = document.querySelectorAll(".character .avatar");
+    const nameImages = document.querySelectorAll(".character .name");
+    
+    for (let i = 0; i < 9; i++) {
+      const charRotate = Math.floor( (Math.random() + 5) * 2 );
+      const nameRotate = Math.floor( (Math.random() + 5) * 2 );
+      characterImages[i].setAttribute("style", `rotate: ${charRotate}deg`);
+      characterImages[i].setAttribute("style", `rotate: ${charRotate}deg`);
+      nameImages[i].setAttribute("style", `rotate: ${nameRotate}deg`);
+    }
+  }
+  
+  const getRandomCharacter = (userCharacter: string) => {
     let characters = document.getElementsByClassName("character");
     const availableCharacters: Element[] = Array.from(characters).filter( (c) => c.classList[1] !== userCharacter );
-    const character = characters[Math.floor(Math.random() * availableCharacters.length)];
+    const character = availableCharacters[Math.floor(Math.random() * availableCharacters.length)];
     return character.classList[1];
   }
 
   const handleSubmit = () => {
     if (gameMode === "pve") {
-      if (userCharacter === "" && textRef.current !== null) {
+      const userCharacter = document.querySelector(".selected")?.classList[1] || "";
+      if (!userCharacter && textRef.current !== null) {
         const textElement: HTMLElement = textRef.current;
         textElement.innerHTML = "<div class='warning'>!! CHOOSE A CHARACTER !!</div>";
         return;
       }
-
-      const aiCharacter = getRandomCharacter();
+      const aiCharacter = getRandomCharacter(userCharacter);
       const userChar: Character = characters[userCharacter as keyof object];
       const aiChar: Character = characters[aiCharacter as keyof object];
       
@@ -43,19 +58,23 @@ function CharacterSelect() {
   const onCharacterClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     let character = undefined;
     const clicked = event.target;
+    document.querySelector(".selected")?.classList.remove("selected");
+    
     if (clicked instanceof HTMLElement) {
       if (clicked.parentElement?.classList.contains("character")) {
+        clicked.parentElement?.classList.add("selected");
         character = clicked.parentElement?.classList[1];
       } else if (clicked.classList.contains("character")) {
         character = clicked.classList[1];
+        clicked.parentElement?.classList.add("selected");
       }
     }
+    
     if (textRef.current !== null && character) {
       const textElement: HTMLElement = textRef.current;
       if (character === "j-you") {
         character = "j.you";
       }
-      setUserCharacter(character);
       textElement.innerHTML = `
         <div class="selected mr-2">SELECTED:</div>
         <div class="character-name">${character}</div>`;
@@ -93,8 +112,16 @@ function CharacterSelect() {
         <Character name="yeojeong"/>
       </div>
       <div className="bottom-section flex flex-col items-center pt-3">
+        {/* TODO: make this section a card */}
         <div ref={textRef} className="text-3xl flex mb-5"/>
-        <button className="character-set btn rounded-lg w-48 py-2" onClick={handleSubmit}>Confirm</button>
+        <div className="action-btns">
+          <button className="btn rounded-lg w-48 py-2 mx-2" onClick={() => dispatch(clearAll())}>
+            Back
+          </button>
+          <button className="character-set btn rounded-lg w-48 py-2 mx-2" onClick={handleSubmit}>
+            Confirm
+          </button>
+        </div>
       </div>
     </section>
   )

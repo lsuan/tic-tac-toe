@@ -1,10 +1,14 @@
 import { useAppDispatch, useAppSelector } from '../states/hooks';
 import { clearAll, clearForRematch } from '../features/board/boardSlice';
 import { changeTurn } from 'src/features/turn/turnSlice';
+import "../styles/results.scss";
  
 function Results() {
   const winner = useAppSelector((state) => state.board.winner);
   const players = useAppSelector((state) => state.board.players);
+  const winStats = useAppSelector((state) => state.board.winStats);
+  const tieStats = useAppSelector((state) => state.board.tieStats);
+  const totalGames = useAppSelector((state) => state.board.totalGames);
   
   const dispatch = useAppDispatch();
   const handleRematch = () => {
@@ -17,19 +21,44 @@ function Results() {
       <div className="text-6xl mb-10">
         {
           winner === 2 &&
-          <h1 className="game-state text-center">
+          <div className="game-state text-center">
             It's a tie!
-          </h1>
+          </div>
         }
         {
           winner !== 2 &&
-          <div className="game-state flex flex-col items-center">
-            <img className="max-h-32 mb-3" src={players && winner? players[winner].character.imageUrl : ""} alt="" />
-            <div className="winner-name text-6xl"> 
-              {players && winner ? players[winner].name : ""}
+          <div className="game-state flex flex-col justify-center items-center">
+            <div className="winner-name text-6xl flex flex-col items-center"> 
+              <div className="winner-text mb-1">
+                Winner:
+              </div>
+              <div className="winner flex justify-center items-center">
+                <div className="player-name">
+                  {players && winner ? players[winner].name : ""}
+                </div>
+                <img className="max-h-32" src={players && winner? players[winner].character.imageUrl : ""} alt="" />
+              </div>
             </div>
           </div>
         }
+      </div>
+      {/* TODO: make this section a card */}
+      <div className="stats flex flex-col items-center text-3xl mb-5">
+        <div className="stats-header mb-1">
+          {
+            `${players && players[0].name.toUpperCase()} | ${players && players[1].name.toUpperCase()} | TIES`
+          }
+        </div>
+        <div className="stats-info mb-1">
+          {
+            `${winStats[0].occurrences} | ${winStats[1].occurrences} | ${tieStats.occurrences}`
+          }
+        </div>
+        <div className="total">
+          {`
+            TOTAL GAMES: ${totalGames}`
+          }
+        </div>
       </div>
       <div className="action-btns flex justify-center">
         <button 
