@@ -39,7 +39,7 @@ function CharacterSelect() {
       const userCharacter = document.querySelector(".selected")?.classList[1] || "";
       if (!userCharacter && textRef.current !== null) {
         const textElement: HTMLElement = textRef.current;
-        textElement.innerHTML = "<div class='warning'>!! CHOOSE A CHARACTER !!</div>";
+        textElement.innerHTML = "<div class='warning card p-4'>!! CHOOSE A CHARACTER !!</div>";
         return;
       }
       const aiCharacter = getRandomCharacter(userCharacter);
@@ -72,6 +72,7 @@ function CharacterSelect() {
     
     if (textRef.current !== null && character) {
       const textElement: HTMLElement = textRef.current;
+      textElement.classList.add("p-4");
       if (character === "j-you") {
         character = "j.you";
       }
@@ -88,9 +89,9 @@ function CharacterSelect() {
 
   function Character( props: CharacterProps ) {
     return (
-      <div className={`character ${props.name} flex flex-col items-center pt-1 md:pb-3 md:px-5 rounded`} onClick={onCharacterClick}>
-        <img className="avatar" src={(characters[props.name as keyof object] as Character).imageUrl} alt=""/>
-        <img className="name" src={(characters[props.name as keyof object] as Character).nameUrl} alt=""/>
+      <div className={`character ${props.name} flex flex-col items-center pt-1 w-full md:pb-3 md:px-5 rounded`} onClick={onCharacterClick}>
+        <img className="avatar w-20 h-20 md:w-32 md:h-auto" src={(characters[props.name as keyof object] as Character).imageUrl} alt=""/>
+        <img className="name w-16 h-12 md:w-24 md:auto" src={(characters[props.name as keyof object] as Character).nameUrl} alt=""/>
       </div>
     );
   }
@@ -100,7 +101,7 @@ function CharacterSelect() {
       <h1 className="title">
         Character Selection
       </h1>
-      <div className="characters grid place-items-center gap-1 my-3 md:m-8">
+      <div className="characters grid place-items-center gap-1 my-5 md:m-8">
         <Character name="donggeon"/>
         <Character name="chan"/>
         <Character name="jisu"/>
@@ -111,15 +112,16 @@ function CharacterSelect() {
         <Character name="renta"/>
         <Character name="yeojeong"/>
       </div>
-      <div className="bottom-section flex flex-col items-center pt-3">
-        {/* TODO: make this section a card */}
-        <div ref={textRef} className="text-3xl flex mb-5"/>
-        <div className="action-btns">
-          <button className="btn rounded-lg w-48 py-2 mx-2" onClick={() => dispatch(clearAll())}>
+      <div className="bottom-section flex flex-col items-center pb-10">
+        <div ref={textRef} className="card text-xl sm:text-3xl flex mb-4"/>
+        <div className="action-btns text-xl sm:text-3xl">
+          <button className="btn rounded-lg w-28 sm:w-48 py-2 mx-2" onClick={() => dispatch(clearAll())}>
+            <i className="fa-regular fa-hand-point-left mr-2" />
             Back
           </button>
-          <button className="character-set btn rounded-lg w-48 py-2 mx-2" onClick={handleSubmit}>
+          <button className="character-set btn rounded-lg w-28 sm:w-48 py-2 mx-2" onClick={handleSubmit}>
             Confirm
+            <i className="fa-regular fa-hand-point-right ml-2" />
           </button>
         </div>
       </div>

@@ -18,7 +18,6 @@ function Cell(props: CellProps) {
     event.preventDefault();
 
     const button: HTMLButtonElement = event.currentTarget;
-    // TODO: change this to show img on cell
     if (button.value === "") {
       const characterImage = players ? players[currentTurn].character.imageUrl : "";
       if (buttonRef.current) {
@@ -35,7 +34,7 @@ function Cell(props: CellProps) {
   }
 
   return (
-    <div id="cell" className={`cell-${props.number} bg-stone-500`}>
+    <div id="cell" className={`cell-${props.number} bg-stone-500 w-20 h-20 sm:w-36 sm:h-36`}>
       <button className="w-full h-full" onClick={handleClick}>
         <img className="w-9/12 m-auto" ref={buttonRef} alt=""/>
       </button>

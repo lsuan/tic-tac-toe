@@ -23,6 +23,7 @@ body {
 :root {
   --yellow: #fef00b;
   --blue: #2a2777;
+  --light-gray: #5A5A5A;
   --gray: #2a2924;
   --red: #4e0a06;
 }
@@ -37,7 +38,6 @@ h1 {
 }
 
 .btn {
-  font-size: 2rem;
   background-color: var(--red);
   border: 2px solid var(--red);
 }
@@ -49,4 +49,9 @@ h1 {
 
 .btn:not(.menu-btn):hover {
   transition: all 0.3s ease;
+}
+
+.card {
+  border-radius: 0.5rem;
+  background-color: var(--light-gray);
 }

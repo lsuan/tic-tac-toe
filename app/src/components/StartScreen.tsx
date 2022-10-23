@@ -46,6 +46,9 @@ function StartScreen() {
           CREATE ONLINE ROOM
         </button>
       </div>
+      <div className="absolute bottom-5 disclaimer text-center text-base px-10 md:px-32">
+        !! I do not own the assets displayed here. Artist face images and name images belong to WakeOne Entertainment. !!
+      </div>
     </section>
   );
 }

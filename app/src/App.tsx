@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { changeTurn } from './features/turn/turnSlice';
 import { useAppSelector, useAppDispatch } from "./states/hooks";
 import CharacterSelect from './components/CharacterSelect';
@@ -17,13 +17,15 @@ function App() {
   useEffect( () => {
     const firstPlayer = Math.floor(Math.random() * 2);
     dispatch(changeTurn(firstPlayer));
-  }, [dispatch]);
+  }, []);
 
   const gameMode = useAppSelector((state) => state.board.gameMode);
   const players = useAppSelector((state) => state.board.players);
   const board = useAppSelector((state) => state.board.board);
   const turn = useAppSelector((state) => state.turn.value);
   const winner = useAppSelector((state) => state.board.winner);
+  const winningCells = useAppSelector((state) => state.board.winningCells);
+  const [canProceed, setCanProceed] = useState(false);
 
   const aiMakeMove = () => {
     const aiOccupied = board.map((element, index) => element === 1 ? index : -1).filter((value) => value !== -1);
@@ -110,7 +112,15 @@ function App() {
     if (!players) {
       return;
     }
+    if (winner === undefined) {
+      setCanProceed(false);
+    }
     if (winner !== undefined) {
+      for (const cell of winningCells) {
+        const cellElement = document.querySelector(`.cell-${cell}`);
+        cellElement?.setAttribute("style", "background-color: var(--yellow)");
+      }
+      setTimeout( () => setCanProceed(true), 1500 );
       return;
     }
 
@@ -133,14 +143,11 @@ function App() {
         gameMode && !players && <CharacterSelect />
       }
       {
-        gameMode && players && winner === undefined && <Game />
+        gameMode && players && !canProceed && <Game canProceed={canProceed}/>
       }
       {
-        winner !== undefined && <Results />
+        gameMode && players && canProceed && <Results setCanProceed={setCanProceed}/>
       }
-      <div className="absolute bottom-5 disclaimer text-center text-base px-10 md:px-32">
-        !! I do not own the assets displayed here. Artist face images and name images belong to WakeOne Entertainment. !!
-      </div>
     </div>
   );
 }
