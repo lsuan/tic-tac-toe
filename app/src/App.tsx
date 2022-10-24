@@ -1,20 +1,36 @@
+import { io } from "socket.io-client";
 import { useEffect, useState } from 'react';
 import { changeTurn } from './features/turn/turnSlice';
 import { useAppSelector, useAppDispatch } from "./states/hooks";
 import CharacterSelect from './components/CharacterSelect';
 import StartScreen from './components/StartScreen';
 import Game from './components/Game';
-
-import './App.css';
 import Results from './components/Results';
+import './App.css';
+import CreateRoom from "./components/CreateRoom";
+import socketService from "./services/socketService";
 
 function App() {
 
   const dispatch = useAppDispatch();  
+
+  // const connect = () => {
+  //   const port = process.env.REACT_APP_PORT;
+  //   const socket = io(`http://localhost:${port}`);
+  //   socket.on("connect", () => {
+  //     console.log("Dfd");
+  //   });
+  // }
+
+  const connectSocket = async () => {
+    const port = process.env.REACT_APP_PORT;
+  //   const socket = io(`http://localhost:${port}`);
+    const socket: any = await socketService.connect(`http://localhost:${port}`);
+  }
   
   // randomly chooses starting player + sets game mode after player selects it
-  // TODO: implement game mode selection screen
   useEffect( () => {
+    connectSocket();
     const firstPlayer = Math.floor(Math.random() * 2);
     dispatch(changeTurn(firstPlayer));
   }, []);
@@ -133,14 +149,17 @@ function App() {
       }
     }
   }, [turn, players]);
-   
+
   return (
     <div className="App lg:container flex justify-center items-center p-3 lg:p-8 h-screen mx-auto">
       {
         !gameMode && <StartScreen />
       }
       {
-        gameMode && !players && <CharacterSelect />
+        gameMode === "pvp" && !players && <CreateRoom />
+      }
+      {
+        gameMode === "pve" && !players && <CharacterSelect />
       }
       {
         gameMode && players && !canProceed && <Game canProceed={canProceed}/>

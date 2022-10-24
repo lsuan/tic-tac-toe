@@ -3,7 +3,7 @@ import { clearAll, clearForRematch } from '../features/board/boardSlice';
 import { changeTurn } from 'src/features/turn/turnSlice';
 import "../styles/results.scss";
 import { Dispatch, SetStateAction } from 'react';
- 
+
 type Proceedable = {
   setCanProceed: Dispatch<SetStateAction<boolean>>
 }

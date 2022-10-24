@@ -43,7 +43,7 @@ function StartScreen() {
           className="menu-btn pvp text-3xl md:text-5xl mt-12 md:mt-28 p-2 rotate-6"
           onClick={() => dispatch(setGameMode("pvp"))}
         >
-          CREATE ONLINE ROOM
+          PLAY AGAINST OTHERS
         </button>
       </div>
       <div className="absolute bottom-5 disclaimer text-center text-base px-10 md:px-32">
