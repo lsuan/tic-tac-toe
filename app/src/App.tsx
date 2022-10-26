@@ -1,4 +1,3 @@
-import { io } from "socket.io-client";
 import { useEffect, useState } from 'react';
 import { changeTurn } from './features/turn/turnSlice';
 import { useAppSelector, useAppDispatch } from "./states/hooks";
@@ -9,6 +8,10 @@ import Results from './components/Results';
 import './App.css';
 import CreateRoom from "./components/CreateRoom";
 import socketService from "./services/socketService";
+import gameService from "./services/gameService";
+import { setBoard } from "./features/board/boardSlice";
+import { createNoSubstitutionTemplateLiteral } from 'typescript';
+// import { setTurn } from "./features/onlineRoom/onlineRoomSlice";
 
 function App() {
 
@@ -21,21 +24,15 @@ function App() {
   //     console.log("Dfd");
   //   });
   // }
-
-  const connectSocket = async () => {
-    const port = process.env.REACT_APP_PORT;
-  //   const socket = io(`http://localhost:${port}`);
-    const socket: any = await socketService.connect(`http://localhost:${port}`);
-  }
   
   // randomly chooses starting player + sets game mode after player selects it
   useEffect( () => {
-    connectSocket();
     const firstPlayer = Math.floor(Math.random() * 2);
     dispatch(changeTurn(firstPlayer));
   }, []);
 
   const gameMode = useAppSelector((state) => state.board.gameMode);
+  const isInRoom = useAppSelector((state) => state.onlineRoom.isInRoom);
   const players = useAppSelector((state) => state.board.players);
   const board = useAppSelector((state) => state.board.board);
   const turn = useAppSelector((state) => state.turn.value);
@@ -43,7 +40,7 @@ function App() {
   const winningCells = useAppSelector((state) => state.board.winningCells);
   const [canProceed, setCanProceed] = useState(false);
 
-  const aiMakeMove = () => {
+  const handleAIMove = () => {
     const aiOccupied = board.map((element, index) => element === 1 ? index : -1).filter((value) => value !== -1);
     const userOccupied = board.map((element, index) => element === 0 ? index : -1).filter((value) => value !== -1);
     let move = -1;
@@ -122,6 +119,39 @@ function App() {
     cell.click();
   }
 
+  const pvpPlayers = useAppSelector((state) => state.onlineRoom.players);
+  console.log(pvpPlayers);
+
+  const handlePlayerMove = () => {
+    if (socketService.socket) {
+      gameService.updateGame(socketService.socket, board);
+    }
+  }
+
+  const handleGameUpdate = () => {
+    if (socketService.socket) {
+      console.log({board});
+      gameService.onGameUpdate(socketService.socket, (board) => {
+        console.log(board);
+        dispatch(setBoard(board));
+      });
+    }
+  }
+
+  const handleGameStart = () => {
+    if (socketService.socket) {
+      gameService.onStartGame(socketService.socket, (turn) => {
+        dispatch(changeTurn);
+      });
+    }
+  }
+
+  useEffect( () => {
+    if (gameMode === "pvp") {
+      // handleGameStart();
+    }
+  }, []);
+
   // handles game state depending on mode
   // TODO: handle lint warnings
   useEffect( () => {
@@ -139,13 +169,18 @@ function App() {
       setTimeout( () => setCanProceed(true), 1500 );
       return;
     }
+    
+    if (gameMode === "pvp") {
+      handlePlayerMove();
+      // handleGameUpdate();
+    }
 
     if (gameMode === "pve" && turn === 1) {
       // if board is empty, then make ai start game a little after render
       if (board.every((cell) => cell === undefined)) {
-        setTimeout( aiMakeMove, 250);
+        setTimeout( handleAIMove, 250);
       } else {
-        setTimeout( aiMakeMove, 750);
+        setTimeout( handleAIMove, 750);
       }
     }
   }, [turn, players]);
@@ -156,16 +191,22 @@ function App() {
         !gameMode && <StartScreen />
       }
       {
-        gameMode === "pvp" && !players && <CreateRoom />
+        gameMode === "pvp" && players.length === 0 && !isInRoom && <CreateRoom />
       }
       {
-        gameMode === "pve" && !players && <CharacterSelect />
+        gameMode === "pvp" && players.length > 0 && isInRoom && <Game canProceed={canProceed} />
       }
       {
-        gameMode && players && !canProceed && <Game canProceed={canProceed}/>
+        gameMode === "pvp" && players.length === 2 && canProceed && <Results setCanProceed={setCanProceed}/>
       }
       {
-        gameMode && players && canProceed && <Results setCanProceed={setCanProceed}/>
+        gameMode === "pve" && players.length !== 2 && <CharacterSelect roomId=""/>
+      }
+      {
+        gameMode === "pve" && players.length === 2 && !canProceed && <Game canProceed={canProceed}/>
+      }
+      {
+        gameMode === "pve" && players.length === 2 && canProceed && <Results setCanProceed={setCanProceed}/>
       }
     </div>
   );

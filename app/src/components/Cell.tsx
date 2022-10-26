@@ -11,6 +11,7 @@ type CellProps = {
 function Cell(props: CellProps) {
   const buttonRef = useRef(null);
   const currentTurn = useAppSelector((state) => state.turn.value);
+  // const gameMode = useAppSelector((state) => state.board.gameMode);
   const dispatch = useAppDispatch();
   const players = useAppSelector((state) => state.board.players);
 

@@ -2,10 +2,19 @@ import "../styles/character-select.scss";
 import { characters } from "src/character";
 import { useEffect, useRef } from "react";
 import { useAppSelector, useAppDispatch } from "src/states/hooks";
-import { clearAll, setPlayers } from "src/features/board/boardSlice";
+import { setPlayers, clearAll } from "src/features/board/boardSlice";
+import { setPvPPlayers } from "src/features/onlineRoom/onlineRoomSlice";
 import Character from "src/character";
+import gameService from "src/services/gameService";
+import { Socket } from "socket.io-client";
+import socketService from "src/services/socketService";
 
-function CharacterSelect() {
+type CharacterSelectProps = {
+  roomId: string,
+}
+
+function CharacterSelect(roomId: CharacterSelectProps) {
+  console.log(roomId);
   const textRef = useRef(null);
   const dispatch = useAppDispatch();
   const gameMode = useAppSelector((state) => state.board.gameMode);
@@ -35,23 +44,33 @@ function CharacterSelect() {
   }
 
   const handleSubmit = () => {
+    const userCharacter = document.querySelector(".selected")?.classList[1] || "";
+    if (!userCharacter && textRef.current !== null) {
+      const textElement: HTMLElement = textRef.current;
+      textElement.innerHTML = "<div class='warning card p-4'>!! CHOOSE A CHARACTER !!</div>";
+      return;
+    }
+
     if (gameMode === "pve") {
-      const userCharacter = document.querySelector(".selected")?.classList[1] || "";
-      if (!userCharacter && textRef.current !== null) {
-        const textElement: HTMLElement = textRef.current;
-        textElement.innerHTML = "<div class='warning card p-4'>!! CHOOSE A CHARACTER !!</div>";
-        return;
-      }
       const aiCharacter = getRandomCharacter(userCharacter);
       const userChar: Character = characters[userCharacter as keyof object];
       const aiChar: Character = characters[aiCharacter as keyof object];
-      
-      const players = [
-        { name: "You", character: userChar },
-        { name: "AI", character: aiChar }
-      ];
-
-      dispatch(setPlayers(players));
+      const userPlayer = [ { name: "You", character: userChar} ];
+      const aiPlayer = [ { name: "AI", character: aiChar} ];
+      dispatch(setPlayers(userPlayer));
+      dispatch(setPlayers(aiPlayer));
+    } else { // TODO: REDO GAME START 
+      console.log("pvp");
+      if (socketService.socket && roomId.roomId !== "") {
+        const userChar: Character = characters[userCharacter as keyof object];
+        const player = { name: "", character: userChar } 
+        socketService.socket.emit("setup_game", { roomId, player })
+        // gameService.onStartGame(socketService.socket, (player) => {
+        //   player.character = userChar;
+        //   console.log(player);
+        //   dispatch(setPlayers([player]));
+        // });
+      }
     }
   }
 

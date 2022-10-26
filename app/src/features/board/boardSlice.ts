@@ -3,7 +3,7 @@ import Character from "src/character";
 
 type InitialState = {
   gameMode: string | undefined,
-  players: Player[] | undefined,
+  players: Player[],
   board: number[],
   emptyCells: number,
   winner: number | undefined,
@@ -24,7 +24,7 @@ type Stats = {
 
 const initialState: InitialState = {
   gameMode: undefined,
-  players: undefined,
+  players: [],
   board: [...Array(9)], // element in array will be 0 or 1
   emptyCells: 9,
   winner: undefined,
@@ -45,7 +45,8 @@ export const boardSlice = createSlice({
     },
 
     setPlayers: (state, action: PayloadAction<Player[]>) => {
-      state.players = action.payload;
+      const newPlayers = state.players.concat(action.payload);
+      state.players = newPlayers;
     },
 
     setBoard: (state, action: PayloadAction<number[]>) => {
@@ -100,7 +101,7 @@ export const boardSlice = createSlice({
 
     clearAll: (state) => {
       state.gameMode = "";
-      state.players = undefined;
+      state.players = [];
       const newBoard = [...Array(9)];
       state.board = newBoard;
       state.emptyCells = 9;
@@ -116,5 +117,5 @@ export const boardSlice = createSlice({
   }
 });
 
-export default boardSlice.reducer;
+export default boardSlice.reducer
 export const { setGameMode, setPlayers, setBoard, checkGameOver, clearForRematch, clearAll } = boardSlice.actions;
