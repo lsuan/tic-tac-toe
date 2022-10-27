@@ -28,7 +28,7 @@ function StartScreen() {
 
   return (
     <section id="start-screen" className="w-full flex flex-col items-center">
-      <h1 className="app-title mx-4 mb-16 md:mb-40 text-5xl md:text-8xl">
+      <h1 className="app-title mx-4 mb-20 md:mb-40 text-5xl md:text-8xl">
         TIC TAC TO
         <span>E</span>
       </h1>
@@ -39,12 +39,12 @@ function StartScreen() {
         >
           PLAY AGAINST AI
         </button>
-        <button 
+        {/* <button 
           className="menu-btn pvp text-3xl md:text-5xl mt-12 md:mt-28 p-2 rotate-6"
           onClick={() => dispatch(setGameMode("pvp"))}
         >
           CREATE ONLINE ROOM
-        </button>
+        </button> */}
       </div>
       <div className="absolute bottom-5 disclaimer text-center text-base px-10 md:px-32">
         !! I do not own the assets displayed here. Artist face images and name images belong to WakeOne Entertainment. !!
