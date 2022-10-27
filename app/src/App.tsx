@@ -9,8 +9,8 @@ import './App.css';
 import CreateRoom from "./components/CreateRoom";
 import socketService from "./services/socketService";
 import gameService from "./services/gameService";
-import { setBoard } from "./features/board/boardSlice";
-import { createNoSubstitutionTemplateLiteral } from 'typescript';
+import { setBoard, setPlayers } from "./features/board/boardSlice";
+import finalPropsSelectorFactory from 'react-redux/es/connect/selectorFactory';
 // import { setTurn } from "./features/onlineRoom/onlineRoomSlice";
 
 function App() {
@@ -119,38 +119,16 @@ function App() {
     cell.click();
   }
 
-  const pvpPlayers = useAppSelector((state) => state.onlineRoom.players);
-  console.log(pvpPlayers);
-
-  const handlePlayerMove = () => {
-    if (socketService.socket) {
-      gameService.updateGame(socketService.socket, board);
-    }
-  }
+  // const pvpPlayers = useAppSelector((state) => state.onlineRoom.players);
+  // console.log(pvpPlayers);
 
   const handleGameUpdate = () => {
     if (socketService.socket) {
-      console.log({board});
       gameService.onGameUpdate(socketService.socket, (board) => {
-        console.log(board);
         dispatch(setBoard(board));
       });
     }
   }
-
-  const handleGameStart = () => {
-    if (socketService.socket) {
-      gameService.onStartGame(socketService.socket, (turn) => {
-        dispatch(changeTurn);
-      });
-    }
-  }
-
-  useEffect( () => {
-    if (gameMode === "pvp") {
-      // handleGameStart();
-    }
-  }, []);
 
   // handles game state depending on mode
   // TODO: handle lint warnings
@@ -171,10 +149,8 @@ function App() {
     }
     
     if (gameMode === "pvp") {
-      handlePlayerMove();
-      // handleGameUpdate();
+      handleGameUpdate();
     }
-
     if (gameMode === "pve" && turn === 1) {
       // if board is empty, then make ai start game a little after render
       if (board.every((cell) => cell === undefined)) {
@@ -191,16 +167,16 @@ function App() {
         !gameMode && <StartScreen />
       }
       {
-        gameMode === "pvp" && players.length === 0 && !isInRoom && <CreateRoom />
+        gameMode === "pvp" && players.length === 0 && <CreateRoom />
       }
       {
-        gameMode === "pvp" && players.length > 0 && isInRoom && <Game canProceed={canProceed} />
+        gameMode === "pvp" && players.length > 0 && isInRoom && !canProceed && <Game canProceed={canProceed} />
       }
       {
         gameMode === "pvp" && players.length === 2 && canProceed && <Results setCanProceed={setCanProceed}/>
       }
       {
-        gameMode === "pve" && players.length !== 2 && <CharacterSelect roomId=""/>
+        gameMode === "pve" && players.length !== 2 && <CharacterSelect roomId="" playerName="" />
       }
       {
         gameMode === "pve" && players.length === 2 && !canProceed && <Game canProceed={canProceed}/>

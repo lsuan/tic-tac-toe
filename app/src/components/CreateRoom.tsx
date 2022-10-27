@@ -17,61 +17,54 @@ function CreateRoom() {
   }, []);
 
   const [roomId, setRoomId] = useState("");
-  const [isJoining, setIsJoining] = useState(false);
-  const dispatch = useAppDispatch();
+  const [playerName, setPlayerName] = useState("");
+  const [canProceed, setCanProceed] = useState(false);
   const isInRoom = useAppSelector((state) => state.onlineRoom.isInRoom);
+  const gameMode = useAppSelector((state) => state.board.gameMode);
+  const players = useAppSelector((state) => state.board.players);
 
-  const handleJoining = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const socket = socketService.socket;
-    if (!roomId || roomId.toLowerCase().trim() === "" || !socket) {
+
+    if (roomId.trim() === "" || playerName.trim() === "") {
       return;
     }
 
-    setIsJoining(true);
-    console.log(roomId);
-
-    const joined = await gameService.joinGameRoom(socket, roomId).catch((err) => {
-      alert(err);
-    });
-
-    if (joined) {
-      console.log(isInRoom);
-      dispatch(setIsInRoom(true));
-      console.log(isInRoom);
-    }
-
-    setIsJoining(false);
-
+    setCanProceed(true);
   }
+
+  
   return (
     <>
-      <section className="create-room w-full">
-        <h1 className="mb-20 text-5xl">
-          Create/Join a Room
-        </h1>
-        <form 
-          className="create-room-form flex flex-col items-end w-1/2 mx-auto" 
-          onSubmit={handleJoining}
-        >
-          <input type="text" className="room-id rounded-lg p-3 mb-5 w-full text-3xl"
-            value={roomId} 
-            onChange={(e) => setRoomId(e.target.value)}
-            placeholder="Name"
-          />
-          <button type="submit" disabled={isJoining} className="btn text-3xl rounded-lg w-28 sm:w-48 py-2">
-            { isJoining ? "Joining..." : (
-              <>
-                <i className="fa-solid fa-highlighter mr-2" />
-                Confirm
-              </>
-              )
-            }
-          </button>
-        </form>
-      </section>
       {
-        isInRoom && <CharacterSelect roomId={roomId}/>
+        !canProceed && 
+          <section className="create-room w-full">
+            <h1 className="mb-20 text-5xl">
+              Create/Join a Room
+            </h1>
+            <form 
+              className="create-room-form flex flex-col items-end w-1/2 mx-auto" 
+              onSubmit={handleSubmit}
+            >
+              <input type="text" className="room-id rounded-lg p-3 mb-5 w-full text-3xl"
+                value={roomId} 
+                onChange={(e) => setRoomId(e.target.value)}
+                placeholder="Room Name"
+              />
+              <input type="text" className="room-id rounded-lg p-3 mb-5 w-full text-3xl"
+                value={playerName} 
+                onChange={(e) => setPlayerName(e.target.value)}
+                placeholder="Your Name"
+              />
+              <button type="submit" className="btn text-3xl rounded-lg w-28 sm:w-48 py-2">
+                Next
+                <i className="fa-regular fa-hand-point-right ml-2" />
+              </button>
+            </form>
+          </section>
+      }
+      {
+        gameMode === "pvp" && players.length == 0 && canProceed && <CharacterSelect roomId={roomId} playerName={playerName}/>
       }
     </>
   );

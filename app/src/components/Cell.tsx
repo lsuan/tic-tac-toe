@@ -3,6 +3,8 @@ import { useAppSelector, useAppDispatch } from "../states/hooks";
 import { changeTurn } from "../features/turn/turnSlice";
 import { checkGameOver, setBoard } from "../features/board/boardSlice";
 import "src/styles/cell.scss";
+import gameService from "src/services/gameService";
+import socketService from "src/services/socketService";
 
 type CellProps = {
   number: number;
@@ -11,7 +13,8 @@ type CellProps = {
 function Cell(props: CellProps) {
   const buttonRef = useRef(null);
   const currentTurn = useAppSelector((state) => state.turn.value);
-  // const gameMode = useAppSelector((state) => state.board.gameMode);
+  const board = useAppSelector((state) => state.board.board);
+  const gameMode = useAppSelector((state) => state.board.gameMode);
   const dispatch = useAppDispatch();
   const players = useAppSelector((state) => state.board.players);
 
@@ -28,6 +31,10 @@ function Cell(props: CellProps) {
       button.value = `${currentTurn}`;
       const buttonNumber = Number(button.parentElement?.classList[0].split("-")[1]);
       dispatch(setBoard( [buttonNumber, currentTurn] ));
+
+      if (gameMode === "pvp" && socketService.socket) {
+        gameService.updateGame(socketService.socket, board);
+      }
       dispatch(checkGameOver(currentTurn));
       const nextTurn = currentTurn === 0 ? 1 : 0;
       dispatch(changeTurn(nextTurn));

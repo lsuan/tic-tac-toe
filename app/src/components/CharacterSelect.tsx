@@ -1,23 +1,44 @@
 import "../styles/character-select.scss";
 import { characters } from "src/character";
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useAppSelector, useAppDispatch } from "src/states/hooks";
 import { setPlayers, clearAll } from "src/features/board/boardSlice";
-import { setPvPPlayers } from "src/features/onlineRoom/onlineRoomSlice";
 import Character from "src/character";
 import gameService from "src/services/gameService";
-import { Socket } from "socket.io-client";
 import socketService from "src/services/socketService";
+import { setIsInRoom } from "src/features/onlineRoom/onlineRoomSlice";
 
 type CharacterSelectProps = {
   roomId: string,
+  playerName: string,
 }
 
-function CharacterSelect(roomId: CharacterSelectProps) {
-  console.log(roomId);
+function CharacterSelect(props: CharacterSelectProps) {
   const textRef = useRef(null);
   const dispatch = useAppDispatch();
   const gameMode = useAppSelector((state) => state.board.gameMode);
+  const players = useAppSelector((state) => state.board.players);
+  const [isJoining, setIsJoining] = useState(false);
+  
+  const handleJoining = async (event: React.MouseEvent<HTMLButtonElement>, character: string) => {
+    const socket = socketService.socket;
+    if (!socket) {
+      return;
+    }
+
+    setIsJoining(true);
+    console.log(character);
+    const userChar: Character = characters[character as keyof object];
+    const joined = await gameService.joinGameRoom(socket, props.roomId, props.playerName, userChar).catch((err) => {
+      alert(err);
+    });
+
+    if (joined) {
+      dispatch(setIsInRoom(true));
+    }
+    setIsJoining(false);
+
+  }
 
   useEffect( () => {
     setRandomRotate();
@@ -43,7 +64,7 @@ function CharacterSelect(roomId: CharacterSelectProps) {
     return character.classList[1];
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = (event: React.MouseEvent<HTMLButtonElement>) => {
     const userCharacter = document.querySelector(".selected")?.classList[1] || "";
     if (!userCharacter && textRef.current !== null) {
       const textElement: HTMLElement = textRef.current;
@@ -61,15 +82,15 @@ function CharacterSelect(roomId: CharacterSelectProps) {
       dispatch(setPlayers(aiPlayer));
     } else { // TODO: REDO GAME START 
       console.log("pvp");
-      if (socketService.socket && roomId.roomId !== "") {
+      handleJoining(event, userCharacter);
+      if (socketService.socket) {
         const userChar: Character = characters[userCharacter as keyof object];
-        const player = { name: "", character: userChar } 
-        socketService.socket.emit("setup_game", { roomId, player })
-        // gameService.onStartGame(socketService.socket, (player) => {
-        //   player.character = userChar;
-        //   console.log(player);
-        //   dispatch(setPlayers([player]));
-        // });
+        const player = { name: props.playerName, character: userChar } 
+        dispatch(setPlayers([player]));
+        
+        gameService.onStartGame(socketService.socket, (player) => {
+          dispatch(setPlayers([player]));
+        });
       }
     }
   }
@@ -139,8 +160,19 @@ function CharacterSelect(roomId: CharacterSelectProps) {
             Back
           </button>
           <button className="character-set btn rounded-lg w-28 sm:w-48 py-2 mx-2" onClick={handleSubmit}>
-            Confirm
-            <i className="fa-regular fa-hand-point-right ml-2" />
+            {
+              isJoining ? (
+                <>
+                  <i className="fa-solid fa-spinner animate-spin text-3xl mr-3" />
+                  Joining...
+                </> 
+              ) : (
+                <>
+                  Confirm
+                  <i className="fa-regular fa-hand-point-right ml-2" />
+                </>
+              )
+            }
           </button>
         </div>
       </div>

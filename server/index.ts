@@ -19,6 +19,7 @@ io.on("connection", (socket) => {
   // on join game
   socket.on("join_game", async (message: any) => {
     console.log("user joined " + message.roomId);
+    console.log(message.character);
     const connectedSockets = io.sockets.adapter.rooms.get(message.roomId);
     const rooms = Array.from(socket.rooms.values());
     const connectedRooms = rooms.filter((room) => room !== socket.id);
@@ -32,17 +33,14 @@ io.on("connection", (socket) => {
       await socket.join(message.roomId);
       socket.emit("room_joined");
       // socket.leave() use this for when user leaves the room (aka when they press quit)
+      const room = io.sockets.adapter.rooms.get(message.roomId);
+      if (room?.size === 2) {
+        const player = { name: message.playerName, character: message.character }
+        socket.emit("start_game", player);
+        socket.to(message.roomId).emit("start_game", player);
+      }
     }
   });
-
-  socket.on("setup_game", async (message: any) => {
-    console.log(message);
-    const room = io.sockets.adapter.rooms.get(message.roomId);
-    if (room?.size === 2) {
-      socket.emit("start_game", { name: "You", character: message.character} );
-      socket.to(message.roomId).emit("start_game", { name: "You", character: message.character });
-    }
-  })
 
   const getSocketGameRoom = (socket: Socket) => {
     const socketRooms = Array.from(socket.rooms.values()).filter((room) => room !== socket.id);
@@ -50,9 +48,9 @@ io.on("connection", (socket) => {
     return gameRoom;
   }
   // on game update
-  socket.on("update_game", async (board: any) => {
+  socket.on("update_game", async (message: any) => {
     const gameRoom = getSocketGameRoom(socket);
-    socket.to(gameRoom).emit("on_game_update", board);
+    socket.to(gameRoom).emit("on_game_update", message);
   });
 });
 
